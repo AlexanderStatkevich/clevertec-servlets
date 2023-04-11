@@ -1,4 +1,4 @@
-package com.statkevich.receipttask.printer;
+package com.statkevich.receipttask.util;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -13,7 +13,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.statkevich.receipttask.dto.ReceiptDto;
 import com.statkevich.receipttask.dto.ReceiptRow;
 
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,13 +22,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Stream;
 
+
 /**
  * Described class implement output of {@link ReceiptDto} in PDF file.
  */
-public class PdfPrinter implements Printer {
+public class PdfGenerateUtil {
 
     //Formatter used to correctly display the time in the receipt
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+    private ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
     private static void addTime(PdfPTable table) {
         String time = LocalTime.now().format(TIME_FORMATTER);
@@ -83,31 +86,41 @@ public class PdfPrinter implements Printer {
         table.addCell(cell);
     }
 
-    @Override
-    public void print(ReceiptDto receiptDto) {
+
+    public byte[] getPdf(ReceiptDto receiptDto) {
         try {
-            Document document = new Document();
-            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("receipt.pdf"));
-            document.open();
-            PdfReader reader = new PdfReader("Clevertec_Template.pdf");
-            PdfImportedPage page = writer.getImportedPage(reader, 1);
-            PdfContentByte directContent = writer.getDirectContent();
-            directContent.addTemplate(page, 0, 0);
+            Document document = prepareDocument(receiptDto);
+            PdfWriter writer = PdfWriter.getInstance(document, byteArrayOutputStream);
+            prepareTemplate(writer);
 
-            Paragraph paragraph = new Paragraph("\n".repeat(7));
-            document.add(paragraph);
-
-            PdfPTable table = new PdfPTable(6);
-            addHeader(table);
-            addDate(table);
-            addTime(table);
-            addTableHeader(table);
-            addRows(table, receiptDto);
-            addFooter(table, receiptDto.total());
-            document.add(table);
-            document.close();
+            return byteArrayOutputStream.toByteArray();
         } catch (DocumentException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void prepareTemplate(PdfWriter writer) throws IOException {
+        PdfReader reader = new PdfReader("Clevertec_Template.pdf");
+        PdfImportedPage page = writer.getImportedPage(reader, 1);
+        PdfContentByte directContent = writer.getDirectContent();
+        directContent.addTemplate(page, 0, 0);
+    }
+
+    private Document prepareDocument(ReceiptDto receiptDto) throws DocumentException {
+        Document document = new Document();
+        document.open();
+        Paragraph paragraph = new Paragraph("\n".repeat(7));
+        document.add(paragraph);
+
+        PdfPTable table = new PdfPTable(6);
+        addHeader(table);
+        addDate(table);
+        addTime(table);
+        addTableHeader(table);
+        addRows(table, receiptDto);
+        addFooter(table, receiptDto.total());
+        document.add(table);
+        document.close();
+        return document;
     }
 }

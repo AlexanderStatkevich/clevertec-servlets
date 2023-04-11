@@ -1,4 +1,4 @@
-CREATE TABLE products
+CREATE TABLE IF NOT EXISTS products1
 (
     id         bigint,
     name       varchar(255),
@@ -6,7 +6,7 @@ CREATE TABLE products
     sale_types varchar(255)[]
 );
 
-CREATE TABLE discount_cards
+CREATE TABLE IF NOT EXISTS discount_cards1
 (
     card_number varchar(255),
     discount    decimal

@@ -9,6 +9,7 @@ import java.io.PrintWriter;
  * Described class implement console output of {@link ReceiptDto}.
  */
 public class ConsolePrinter implements Printer {
+
     private final PrintWriter writer;
 
     public ConsolePrinter(PrintWriter writer) {
