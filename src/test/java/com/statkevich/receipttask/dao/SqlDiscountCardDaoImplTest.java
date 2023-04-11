@@ -1,6 +1,7 @@
 package com.statkevich.receipttask.dao;
 
-import com.statkevich.receipttask.dao.sql.SqlDiscountCardDao;
+import com.statkevich.receipttask.dao.api.DiscountCardDao;
+import com.statkevich.receipttask.dao.sql.DiscountCardDaoImpl;
 import com.statkevich.receipttask.domain.DiscountCard;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ import static com.statkevich.receipttask.testutil.model.DiscountCardTestBuilder.
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
-class SqlDiscountCardDaoTest {
+class SqlDiscountCardDaoImplTest {
 
     @Container
     private final PostgreSQLContainer<?> postgreSqlContainer = new PostgreSQLContainer<>("postgres:15.1-alpine")
@@ -31,13 +32,13 @@ class SqlDiscountCardDaoTest {
 
 
     private DataSource dataSource;
-    private SqlDiscountCardDao cardDao;
+    private DiscountCardDao cardDao;
 
 
     @BeforeEach
     void init() {
         dataSource = getDataSource(postgreSqlContainer);
-        cardDao = new SqlDiscountCardDao(dataSource);
+        cardDao = new DiscountCardDaoImpl(dataSource);
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {

@@ -6,7 +6,9 @@ import com.statkevich.receipttask.domain.dto.ProductCreateDto;
 import com.statkevich.receipttask.domain.dto.ProductDto;
 import com.statkevich.receipttask.domain.mapper.ProductMapper;
 import com.statkevich.receipttask.domain.mapper.ProductMapperImpl;
+import com.statkevich.receipttask.dto.PageDto;
 import com.statkevich.receipttask.service.api.IProductService;
+import com.statkevich.receipttask.util.PageMapper;
 
 import java.util.List;
 
@@ -19,6 +21,8 @@ public class ProductService implements IProductService {
     private final ProductDao productDao;
 
     private final ProductMapper mapper = new ProductMapperImpl();
+
+    private final PageMapper<CommonProduct, ProductDto> pageMapper = new PageMapper<>(mapper);
 
     public ProductService(ProductDao productDao) {
         this.productDao = productDao;
@@ -38,6 +42,12 @@ public class ProductService implements IProductService {
     public ProductDto get(Long id) {
         CommonProduct commonProduct = productDao.get(id);
         return mapper.toDto(commonProduct);
+    }
+
+    @Override
+    public PageDto<ProductDto> getPage(Long pageNumber, Long pageSize) {
+        PageDto<CommonProduct> page = productDao.getPage(pageNumber, pageSize);
+        return pageMapper.mapToDto(page);
     }
 
     @Override

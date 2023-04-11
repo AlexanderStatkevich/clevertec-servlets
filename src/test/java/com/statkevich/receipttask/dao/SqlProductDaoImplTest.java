@@ -1,6 +1,7 @@
 package com.statkevich.receipttask.dao;
 
-import com.statkevich.receipttask.dao.sql.SqlProductDao;
+import com.statkevich.receipttask.dao.api.ProductDao;
+import com.statkevich.receipttask.dao.sql.ProductDaoImpl;
 import com.statkevich.receipttask.domain.CommonProduct;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ import static com.statkevich.receipttask.testutil.model.CommonProductTestBuilder
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
-class SqlProductDaoTest {
+class SqlProductDaoImplTest {
     @Container
     private final PostgreSQLContainer<?> postgreSqlContainer = new PostgreSQLContainer<>("postgres:15.1-alpine")
             .withDatabaseName("receiptDB")
@@ -29,12 +30,12 @@ class SqlProductDaoTest {
             .withPassword("test")
             .withInitScript("test.sql");
     private DataSource dataSource;
-    private SqlProductDao productDao;
+    private ProductDao productDao;
 
     @BeforeEach
     void init() {
         dataSource = getDataSource(postgreSqlContainer);
-        productDao = new SqlProductDao(dataSource);
+        productDao = new ProductDaoImpl(dataSource);
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             String sql = """
