@@ -1,3 +1,5 @@
 cache:
   type: LRU
   size: 10
+
+initialize_db: create
