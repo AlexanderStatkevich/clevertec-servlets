@@ -30,7 +30,8 @@ dependencies {
             "org.apache.logging.log4j:log4j-api:${log4jVersion}",
             "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}",
             'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.11.1',
-            'com.itextpdf:itextpdf:5.5.10'
+            'com.itextpdf:itextpdf:5.5.10',
+            'org.mybatis:mybatis:3.5.13'
     )
 
     compileOnly(
